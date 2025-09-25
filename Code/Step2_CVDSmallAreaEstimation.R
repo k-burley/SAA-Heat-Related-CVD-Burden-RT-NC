@@ -100,6 +100,7 @@ acs_cbg_orig <- read_csv("./Data/Original/Census/nhgis0025_ds249_20205_blck_grp_
                                              grepl("NTV", Variable) ~ "NANative",
                                              grepl("HPC", Variable) ~ "Hispanic",
                                              grepl("OTH",Variable) ~ "Other"))) %>%
+    mutate(race_factor = factor(race_factor, levels=c("White","Black","NANative","Hispanic","Other"))) %>% # EPA confirm this works to set White as base in regression
     # Keep only combos with non-NA
     filter(!is.na(sex_factor) & !is.na(age_factor) & !is.na(race_factor)) %>% # no observations for NANative Male 85+
     select(-c(Variable,ZCTA))
