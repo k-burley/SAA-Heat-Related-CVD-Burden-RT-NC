@@ -86,8 +86,7 @@ med_in_dir  <- "O:/PRIV/IRBData/Medicare/Project_Folders/Multivariate/DFForDataL
 # Define all of the formulas to be used in the modeling loop
 
 # ###############################################################################
-zip_zcta_crosswalk<-read.csv("O:\\PRIV\\IRBData\\Medicare\\Project_Folders\\SAEproject\\RTP_ZipcodeZCTA_crosswalk2009to2020.csv", sep="\t", header=T)
-
+zip_zcta_crosswalk<-read.csv("O:\\PRIV\\IRBData\\Medicare\\Project_Folders\\SAEproject\\RTP_GitHubFiles_and_Output\\RTP_ZipcodeZCTA_crosswalk2009to2020.csv", sep="\t", header=T)
 avg_num_bene_df<-fread(paste0(in_dir,"AVGNUMBENE_20092019_120CBSA_ZIP.csv"), drop = 1)
 avg_num_bene_df$ZIP<-str_pad(avg_num_bene_df$ZIP,5,"0",side = "left")
 #
@@ -516,24 +515,6 @@ lag_red_info_out=paste0(out_dir,"LAG_reduced_coef_vcov_",subgroup_name,".RData")
 #saves lag-response 95th to 50th percentile
 save(lag.coef_red,lag.vcov_red,file=lag_red_info_out)
 
-
-###########################################################################################
-# FINDING THE MINIMUM HOSPITALIZATION PERCENTILE (MHP)
-# We've chosen the 50th percentile as our centering point instead of the MHP, 
-
-# Find minimum hospitalization temperature and percentile 
-#source("./code/findmin.r") # From: https://github.com/gasparrini/2017_tobias_Epidem_Rcodedata
-source("O:\\PRIV\\IRBData\\Medicare\\Project_Folders\\Cold_CVD_Resp\\findmin.R")
-# Predictions for Minimum Hosp Temp across all observed temperature
-mht<- findmin(cb_rtp.ns2knots.lag6,model= fit,at=rtp_df$tmean_c)
-## 15.0
-ecdf_function<-ecdf(rtp_df$tmean_c)
-mhp <- ecdf_function(mht) *100
-mhp
-## 5.4
-
-
-rm(list=ls())
 
 
 

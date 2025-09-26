@@ -100,7 +100,7 @@ acs_cbg_orig <- read_csv("./Data/Original/Census/nhgis0025_ds249_20205_blck_grp_
                                              grepl("NTV", Variable) ~ "NANative",
                                              grepl("HPC", Variable) ~ "Hispanic",
                                              grepl("OTH",Variable) ~ "Other"))) %>%
-    mutate(race_factor = factor(race_factor, levels=c("White","Black","NANative","Hispanic","Other"))) %>% # EPA confirm this works to set White as base in regression
+    mutate(race_factor = factor(race_factor, levels=c("White","Black","NANative","Hispanic","Other", "Asian"))) %>% # EPA confirm this works to set White as base in regression
     # Keep only combos with non-NA
     filter(!is.na(sex_factor) & !is.na(age_factor) & !is.na(race_factor)) %>% # no observations for NANative Male 85+
     select(-c(Variable,ZCTA))
@@ -184,7 +184,7 @@ combo_grid_daily <- expand.grid(age, sex, race, zcta, dates) %>%
   # FOR AGGREGATED MODEL:
   mutate(cvd_pct = total_CVD/total_ben) # this is the dependent variable
 
-rm(acs_zcta, acs_zcta_orig, xwalk, totals, pseudo_counts_daily)
+rm(acs_zcta, acs_zcta_orig, totals)
 
 ## 3. Estimate the Multi-Level Regression (MR of MRP) ----
 
@@ -205,7 +205,7 @@ model_agg <- glmer(cvd_pct ~ age_factor + race_factor + sex_factor + pct_hh_belo
 
 end.time <- Sys.time()
 
-start.time-end.time 
+end.time-start.time 
 
 # Export Model Results
 saveRDS(model_agg, file="./Data/Analysis/2_model_agg.RDS")
