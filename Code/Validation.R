@@ -130,7 +130,7 @@ validation <- zcta_annual_direct %>%
          mape_sumterm = mad_sumterm/total_CVD_direct) %>%
   mutate(mse_sumterm_wgt = (total_CVD_model_wgt-total_CVD_direct)^2,
          mad_sumterm_wgt  = abs(total_CVD_model_wgt-total_CVD_direct),
-         mape_sumterm_wgt = mad_sumterm/total_CVD_direct)
+         mape_sumterm_wgt = mad_sumterm_wgt/total_CVD_direct)
   
 # 3. Compare distributions of CVD hospitalization rates per capita @ CBG vs. ZCTA ----
 
