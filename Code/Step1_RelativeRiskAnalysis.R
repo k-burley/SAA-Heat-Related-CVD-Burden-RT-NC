@@ -91,7 +91,7 @@ avg_num_bene_df<-fread(paste0(in_dir,"AVGNUMBENE_20092019_120CBSA_ZIP.csv"), dro
 avg_num_bene_df$ZIP<-str_pad(avg_num_bene_df$ZIP,5,"0",side = "left")
 #
 #
-rtp_temp_df<-read_csv(paste0(in_dir,"02_RTP_ZCTA_Temp_2010_2019_2024Mar6.csv"))
+rtp_temp_df<-read_csv(paste0(in_dir,"RTP_ZCTA_Temp_2010_2019.csv"))
 str(rtp_temp_df)
 zcta_list<-unique(rtp_temp_df$GEOID10)
 
