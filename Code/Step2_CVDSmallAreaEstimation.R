@@ -180,6 +180,9 @@ combo_grid_daily <- expand.grid(age, sex, race, zcta, dates) %>%
   
   # Bring in zcta-level data (education, income, poverty)
   left_join(acs_zcta, by=c("zcta")) %>%
+  
+  # Relevel race variable so White is the base category in the regression
+  mutate(race_factor = fct_relevel(race_factor, c("White", "Black", "Hispanic", "Other", "Asian", "NANative"))) %>%
 
   # FOR AGGREGATED MODEL:
   mutate(cvd_pct = total_CVD/total_ben) # this is the dependent variable
@@ -211,7 +214,7 @@ end.time-start.time
 saveRDS(model_agg, file="./Data/Analysis/2_model_agg.RDS")
 
 # Explore Model Results
-model_agg <- readRDS("../Data/Analysis/2_model_agg.RDS.RDS")
+model_agg <- readRDS("../Data/Analysis/2_model_agg.RDS")
 summary(model_agg)
 stargazer(model_agg, type="html", dep.var.labels = c("CVD"),
           covariate.labels = c("Age (74-83)", "Age (84+)", 
