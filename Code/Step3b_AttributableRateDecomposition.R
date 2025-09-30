@@ -35,7 +35,7 @@ library(waterfalls)
 ###~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Daily Temperatures
-rtp_temp_df_cbg <- read_csv("../Data/Original/Temperature/2_RTP_CBG_Temp_2018.csv") %>% # CBG daily temperatures during summer
+rtp_temp_df_cbg <- read_csv("../Data/Original/Temperature/RTP_CBG_Temp_2018.csv") %>% # CBG daily temperatures during summer
   select(-"...1") %>%
   # Convert fahrenheit to celsius - only using 1km for decomposition
   mutate(tmean_c_1km = (tmean_f_1km-32)*(5/9)) %>%

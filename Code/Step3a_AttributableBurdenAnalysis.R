@@ -74,8 +74,6 @@ library(RColorBrewer)
     # order for the crossbasis and lags
     arrange(GEOID, date)
   
-  source("attrdl.R") # From: https://github.com/gasparrini/2014_gasparrini_BMCmrm_Rcodedata
-  
 
 ##~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ## 2. Forward Attributable Analysis - USING attrdl ----

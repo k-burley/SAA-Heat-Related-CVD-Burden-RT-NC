@@ -76,13 +76,13 @@ unique(total_bene_df$Variable)
 
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
 
-pop_overlap_orig <- read.table("./Data/Original/Geography/RTP_zcta10CBG20Pop.csv", sep="\t", header=T)
-focus_zctas_orig <- st_read("./Data/Original/Geography/RTP_CBSAZCTA.shp")
-xwalk_orig <- read_csv("./Data/Original/Geography/zipcodeZCTA2009to2020_melt.csv")
+pop_overlap_orig <- read.table("../Data/Original/Geography/RTP_zcta10CBG20Pop.csv", sep="\t", header=T)
+focus_zctas_orig <- st_read("../Data/Original/Geography/RTP_CBSAZCTA.shp")
+xwalk_orig <- read_csv("../Data/Original/Geography/zipcodeZCTA2009to2020_melt.csv")
 
-p12_all <- read_csv("./Data/Original/Census/Census_P12_Tables.csv")
-acs_zcta_orig <- read_csv("./Data/Original/Census/nhgis0024_ds244_20195_zcta_E.csv") # ACS 2015-2019
-acs_cbg_orig <- read_csv("./Data/Original/Census/nhgis0025_ds249_20205_blck_grp_E.csv") # ACS 2016-2020
+p12_all <- read_csv("../Data/Original/Census/Census_P12_Tables.csv")
+acs_zcta_orig <- read_csv("../Data/Original/Census/nhgis0024_ds244_20195_zcta_E.csv") # ACS 2015-2019
+acs_cbg_orig <- read_csv("../Data/Original/Census/nhgis0025_ds249_20205_blck_grp_E.csv") # ACS 2016-2020
 
 
 ## 2. Format Data  ----
@@ -217,9 +217,9 @@ saveRDS(model_agg, file="./Data/Analysis/2_model_agg.RDS")
 model_agg <- readRDS("../Data/Analysis/2_model_agg.RDS")
 summary(model_agg)
 stargazer(model_agg, type="html", dep.var.labels = c("CVD"),
-          covariate.labels = c("Age (74-83)", "Age (84+)", 
-                               "Race (Black)", "Race (Hispanic)", "Race (Other)", "Race (White)",
-                               "Sex (Male)", "Households Below PL (%)", "Pop with Bachelor's Degree+ (%)"), 
+          covariate.labels = c("Age (74-83)", "Age (84+)",
+                               "Race (Black)", "Race (Hispanic)", "Race (Other)", "Race (Asian)",
+                               "Sex (Male)", "Households Below PL (%)", "Pop with Bachelor's Degree+ (%)"),
           out = "../Data/Results/2_MRP_Model_Results.htm")
 
 #OR <- exp(coef(model_agg))
@@ -302,10 +302,10 @@ acs_cbg <- acs_cbg_orig %>%
 # Because CBGs don't nest perfectly w/i ZCTAs, this is handled with population weighting in this section
 
 # CREATE PREDICTION GRID with all relevant variables
-age <- unique(combo_grid_daily$age_factor)
-sex <- unique(combo_grid_daily$sex_factor)
-race <- unique(combo_grid_daily$race_factor)
-zcta <- unique(combo_grid_daily$zcta)
+age <- unique(model_agg@frame$age_factor) # unique(combo_grid_daily$age_factor)
+sex <- unique(model_agg@frame$sex_factor) # unique(combo_grid_daily$sex_factor)
+race <- unique(model_agg@frame$race_factor) # unique(combo_grid_daily$race_factor)
+zcta <- unique(model_agg@frame$zcta) # unique(combo_grid_daily$zcta)
 cbgs <- unique(focus_cbgs_pop$GEOID) 
 
 combo_grid_cbg <- expand.grid(age, sex, race, zcta, cbgs) %>%
@@ -332,9 +332,9 @@ final_predictions <- combo_grid_cbg %>%
   mutate(weight = pop_weight/100) %>%
   mutate(apply_weights = weight*prediction) %>%
   group_by(GEOID, age_factor, sex_factor, race_factor, median_hh_inc, pct_hh_below_pl, pct_hh_below_pl_65, pct_w_bach) %>%
-  summarise(pred_weighted = sum(apply_weights)) # 94 still missing predictions
+  summarise(pred_weighted = sum(apply_weights)) 
 
-write.csv(final_predictions, "./Data/Analysis/2_Predictions_Multilevel.csv", row.names=F)
+write.csv(final_predictions, "../Data/Analysis/2_Predictions_Multilevel.csv", row.names=F)
 
 rm(combo_grid, educ_cbg, inc_cbg, pov_cbg, model_agg)
 rm(age, dates, race, sex, zcta, cbgs)
@@ -447,7 +447,7 @@ burdens <- census_data %>%
   mutate(daily_incidence_10000 = (burden/pop_count)*10000) %>% # pop count is for population 65+
   filter(pop_count>10) # 8 CBGs, pop_count is for people 65+
 
-write.csv(burdens, "./Data/Analysis/2_Predicted_Incidence_Rates_ML.csv", row.names=F)
+write.csv(burdens, "../Data/Analysis/2_Predicted_Incidence_Rates_ML.csv", row.names=F)
 
 
 

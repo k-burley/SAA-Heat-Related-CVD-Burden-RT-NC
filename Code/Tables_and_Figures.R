@@ -58,7 +58,7 @@ pal_green_cont <- colorRampPalette(c("#84EFD8", "#034036"))
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 # Step 3a Results
-cbg_an_final_25 <- read_csv("../Data/Analysis/RTP_XCESS_ATTR_Burden_CBG_Summer2018_25C_povallhh.csv") %>% # "../Data/Analysis/3_RTP_XCESS_ATTR_Burden_CBG_Summer2018_25C.csv"
+cbg_an_final_25 <- read_csv("../Data/Analysis/3_RTP_XCESS_ATTR_Burden_CBG_Summer2018_25C.csv") %>% 
   filter(!is.na(an_c_1km)) %>%
   mutate(month = month(date)) %>%
   filter(month %in% c(5,6,7,8,9)) # drop out the lag days in April and October
@@ -85,7 +85,7 @@ cbg_comp_sf <- cbg_sf %>%
   filter(!is.na(tot_an)) # drop out CBGs in NC outside of the RT focus area
 
 # Step 3b Results
-decomp <- read_csv("../Data/Analysis/RTP_XCESS_ATTR_Burden_CBG_Decomposed_povallhh.csv") %>% # "../Data/Results/3b_Attributable_Rate_Decomposition.csv"
+decomp <- read_csv("../Data/Results/3b_Attributable_Rate_Decomposition.csv") %>%
   select(-c(pop_count)) %>%
   mutate(GEOID = as.character(GEOID))
 
@@ -114,7 +114,7 @@ rm(cbg_comp, cbg_sf, cbg_comp_sf, decomp, cbg_an_final_25)
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ 
 # Note: This table combines the modeling results from Step 2 and subgroup burdens from Step 3c
 
-step2_results <- read.csv("../Data/Figures/MRP_Model_Results.csv") %>% # "../Data/Results/2_MRP_Model_Results.csv"
+step2_results <- read.csv("../Data/Results/2_MRP_Model_Results.csv") %>% #
   mutate(subgroup_type = case_when(grepl("age",X) ~ "age",
                                    grepl("sex",X) ~ "sex",
                                    grepl("race",X) ~ "race"),
@@ -125,9 +125,10 @@ step2_results <- read.csv("../Data/Figures/MRP_Model_Results.csv") %>% # "../Dat
 
 step3c_results <- read.csv("../Data/Results/3c_Subgroup_Attributable_Burdens.csv") %>%
   select(subgroup_type, subgroup_value, pop_count, tot_an, rate_an) %>%
+  mutate(cvd_hosp_rate_per10k = rate_an/10) %>% # convert to 10,000 from 100,000
   rename(population = pop_count,
-         tot_cvd_hosp_count = tot_an,
-         cvd_hosp_rate_per10k = rate_an)
+         tot_cvd_hosp_count = tot_an) %>%
+  select(-rate_an)
 
 table3 <- step2_results %>%
   full_join(step3c_results, by=c("subgroup_type","subgroup_value")) %>%
@@ -340,9 +341,9 @@ bar_comp <- ggarrange(sex_comp, race_comp, age_comp, other_comp,
                       nrow=2, ncol=2, common.legend = T, legend="bottom") 
 
 # MAP
-tot_an_rate_sf <- ggplot(cbg_sf) +
+tot_an_rate_sf <- ggplot(cbg_comp_sf_plot) +
   geom_sf(aes(fill=an_rate_qtile, color=top_ten),
-          lwd = ifelse(cbg_sf$top_ten =="Top 10%", 1, 0.1)) +
+          linewidth = ifelse(cbg_comp_sf_plot$top_ten =="Top 10%", 1, 0.1)) +
   scale_fill_gradient(name = "CBG Attr. Rate Quantile",
                       high = "#034036", low = "#84EFD8", ) + 
   scale_color_manual(values=c("Bottom 90%"="black","Top 10%"=pal2[1]),
@@ -393,6 +394,15 @@ temp_tps <- tm_shape(cbg_comp_sf_plot) +
 
 tmap_save(temp_tps, "../Data/Figures/temp_tps.png", height=4.5, width=4)
 
+temp_diff <- tm_shape(cbg_comp_sf_plot) +
+  tm_polygons("temp_diff", 
+              style="cont", 
+              title="Degrees F",
+              palette = pal_red_cont(100)) + # "Reds"
+  tm_layout(main.title="Summer Avg. Temperature Difference",
+            legend.position=c("left","TOP"),
+            main.title.size=1)
+
 tmap_save(temp_diff, "../Data/Figures/temp_diff.png", height=4.5, width=4)
 
 anr_1km <- tm_shape(cbg_comp_sf_plot) +
@@ -416,6 +426,16 @@ anr_tps <- tm_shape(cbg_comp_sf_plot) +
             main.title.size=1) 
 
 tmap_save(anr_tps, "../Data/Figures/anr_tps.png", height=4.5, width=4)
+
+rate_diff <- tm_shape(cbg_comp_sf_plot) +
+  tm_polygons("an_rate_diff", 
+              # n=10,
+              style="quantile", 
+              title = "AN per 10k",
+              palette = pal_green_cont(10)) + # "Reds
+  tm_layout(main.title="Attributable Rate Difference",
+            legend.position=c("left","TOP"),
+            main.title.size=1)
 
 tmap_save(rate_diff, "../Data/Figures/rate_diff.png", height=4.5, width=4)
 
