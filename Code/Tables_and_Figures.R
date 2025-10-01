@@ -399,7 +399,7 @@ temp_diff <- tm_shape(cbg_comp_sf_plot) +
               style="cont", 
               title="Degrees F",
               palette = pal_red_cont(100)) + # "Reds"
-  tm_layout(main.title="Summer Avg. Temperature Difference",
+  tm_layout(main.title="A. Summer Avg. Temperature Difference",
             legend.position=c("left","TOP"),
             main.title.size=1)
 
@@ -433,11 +433,23 @@ rate_diff <- tm_shape(cbg_comp_sf_plot) +
               style="quantile", 
               title = "AN per 10k",
               palette = pal_green_cont(10)) + # "Reds
-  tm_layout(main.title="Attributable Rate Difference",
+  tm_layout(main.title="B. Attributable Rate Difference",
             legend.position=c("left","TOP"),
             main.title.size=1)
 
 tmap_save(rate_diff, "../Data/Figures/rate_diff.png", height=4.5, width=4)
+
+# Scatter Plot
+scatter <- ggplot(cbg_comp_sf_plot, aes(x=tmean_f, y=temp_diff)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  theme_minimal() +
+  labs(x= "High Res. Summer Avg. Temperature (F)", y = "Difference (High Res. Temp. - Low Res. Temp.) (F)") +
+  ggtitle("C. Temperature vs. Temperature Difference") +
+  theme(plot.title = element_text(hjust = 0, size = 13))
+scatter
+
+ggsave("../Data/Figures/temp_diff_scatter.png",scatter, height=4.5, width=4)
 
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ### Figure 4: Characteristics of CBGs by Risk Group ----

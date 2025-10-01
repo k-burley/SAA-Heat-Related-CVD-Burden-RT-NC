@@ -137,13 +137,13 @@ dates <- unique(CVD_daily_counts$DATE)
 
 acs_zcta <- acs_zcta_orig %>%
   select(ZCTA5A, ALWGE001, ALWGE022, ALWGE023, ALWGE024, ALWGE025, ALWGE025, ALWYE001, ALWYE002, ALWYE008, ALWYE014, ALWYE019, ALWYE025, ALWYE030, ALWYE037, ALWYE043, ALWYE048, ALWYE054, ALWYE059, ALW1E001) %>%
-  # Educational Attainment for the Population 25 Years and Over, ACS 2018-2022
+  # Educational Attainment for the Population 25 Years and Over, ACS 2015-2019
   mutate(pct_w_bach = (ALWGE022+ALWGE023+ALWGE024+ALWGE025)/ALWGE001) %>%
   
-  # Median Household Income in the Past 12 Months (in 2022 Inflation-Adjusted Dollars), ACS 2018-2022
+  # Median Household Income in the Past 12 Months (in 2019 Inflation-Adjusted Dollars), ACS 2015-2019
   rename(median_hh_inc = ALW1E001) %>%
   
-  # Households with Income in Past 12 Months Below Poverty Level, ACS 2018-22 (All and Those w/ householder 65+ )
+  # Households with Income in Past 12 Months Below Poverty Level, ACS 2015-2019 (All and Those w/ householder 65+ )
   mutate(pct_hh_below_pl = ALWYE002/ALWYE001) %>%
   mutate(pct_hh_below_pl_65 = (ALWYE008+ALWYE014+ALWYE019+ALWYE025+ALWYE030)/(ALWYE008+ALWYE014+ALWYE019+ALWYE025+ALWYE030+ALWYE037+ALWYE043+ALWYE048+ALWYE054+ALWYE059)) %>%
   
