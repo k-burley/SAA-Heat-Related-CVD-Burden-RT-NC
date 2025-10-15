@@ -107,16 +107,24 @@ map_df <- cbg_comp_sf_plot %>%
                                    (temp_pctile %% 10 == 2 & temp_pctile!=12) ~ paste0(round(tmean_f, 1),"°F"),
                                    (temp_pctile %% 10 == 3 & temp_pctile!=13) ~ paste0(round(tmean_f, 1),"°F"),
                                    TRUE ~ paste0(round(tmean_f, 1),"°F"))) %>%
-  mutate(anr_pct_text = case_when((anrate_pctile %% 10 == 1 & anrate_pctile!=11) ~ paste0(round(tot_an_rate, 1)," hosp. per 10k (",anrate_pctile,"st percentile)"),
-                                  (anrate_pctile %% 10 == 2 & anrate_pctile!=12) ~ paste0(round(tot_an_rate, 1)," hosp. per 10k (",anrate_pctile,"nd percentile)"),
-                                  (anrate_pctile %% 10 == 3 & anrate_pctile!=13) ~ paste0(round(tot_an_rate, 1)," hosp. per 10k (",anrate_pctile,"rd percentile)"),
-                                  TRUE ~ paste0(round(tot_an_rate, 1)," hosp. per 10k (",anrate_pctile,"th percentile)"))) %>%
-  mutate(health_cont_text = case_when(an_cvddiff1_rate<0 ~ "lower",
-                                      an_cvddiff1_rate>0 ~ "higher")) %>%
+  mutate(anr_pct_text = case_when((anrate_pctile %% 10 == 1 & anrate_pctile!=11) ~ paste0(round(tot_an_rate, 1)," hospitalizations per 10k (",anrate_pctile,"st percentile)"),
+                                  (anrate_pctile %% 10 == 2 & anrate_pctile!=12) ~ paste0(round(tot_an_rate, 1)," hospitalizations per 10k (",anrate_pctile,"nd percentile)"),
+                                  (anrate_pctile %% 10 == 3 & anrate_pctile!=13) ~ paste0(round(tot_an_rate, 1)," hospitalizations per 10k (",anrate_pctile,"rd percentile)"),
+                                  TRUE ~ paste0(round(tot_an_rate, 1)," hospitalizations per 10k (",anrate_pctile,"th percentile)"))) %>%
+  mutate(risk_group_text1 = case_when(cluster == "Dual Channel Risk" ~ "relatively high cardiovascular disease incidence and heat exposure",
+                                     cluster == "Heat Driven Risk" ~ "relatively high heat exposure",
+                                     cluster == "Health Driven Risk" ~ "relatively high cardiovascular disease incidence",
+                                     cluster == "Low Risk" ~ "relatively low cardiovascular disease incidence and heat exposure")) %>%
+  mutate(risk_group_text2 = case_when(cluster == "Dual Channel Risk" ~ " contribute to the heat health burden ",
+                                     cluster == "Heat Driven Risk" ~ " contributes to the heat health burden ",
+                                     cluster == "Health Driven Risk" ~ " contributes to the heat health burden ",
+                                     cluster == "Low Risk" ~ " result in below average heat health burden ")) %>%
+  # mutate(health_cont_text = case_when(an_cvddiff1_rate<0 ~ "lower",
+  #                                     an_cvddiff1_rate>0 ~ "higher")) %>%
   mutate(health_cont_sign = case_when(an_cvddiff1_rate<0 ~ "<",
                                       an_cvddiff1_rate>0 ~ ">")) %>%
-  mutate(heat_cont_text = case_when(an_tempdiff2_rate<0 ~ "lower",
-                                    an_tempdiff2_rate>0 ~ "higher")) %>%
+  # mutate(heat_cont_text = case_when(an_tempdiff2_rate<0 ~ "lower",
+  #                                   an_tempdiff2_rate>0 ~ "higher")) %>%
   mutate(heat_cont_sign = case_when(an_tempdiff2_rate<0 ~ "<",
                                     an_tempdiff2_rate>0 ~ ">")) %>%
   mutate(overall_anr_text = case_when(tot_an_rate < 5.788092 ~ "lower",
@@ -556,7 +564,7 @@ ui<- dashboardPage(
     # tabItems(
     ######################### Map #
     # tabItem(tabName = "map",
-    h2("CBG Heat-Related CVD Burdens in North Carolina's Research Triangle Area"),
+    h2("CBG Heat-Related CVD Burdens in North Carolina's Research Triangle Area During Summer 2018"),
     # fluidPage(
     fluidRow(
       column(width = 6,
@@ -693,30 +701,49 @@ server <- shinyServer(function(input, output) {
     if (!all(is.null(unlist(location_info)))){ # if any entry in rv_location is not NULL
       HTML(paste(h4(strong('Results for Census Block Group:',rv_location$id)),
                  
-                 h4('This census block group is in the ', 
-                 strong(rvs$poly_cbg$cluster[rvs$poly_cbg$GEOID==rv_location$id]),
-                 'Group, meaning that the CVD incidence rate is', 
-                 strong(rvs$poly_cbg$health_cont_text[rvs$poly_cbg$GEOID==rv_location$id]), 
-                 'than the Research Triangle area average (Health Contribution ',
-                 rvs$poly_cbg$health_cont_sign[rvs$poly_cbg$GEOID==rv_location$id],
-                 ' 0) and the summer average daily temperature is ',
-                 strong(rvs$poly_cbg$heat_cont_text[rvs$poly_cbg$GEOID==rv_location$id]), 
-                 'than the Research Triangle average (Heat Contribution ',
-                 rvs$poly_cbg$heat_cont_sign[rvs$poly_cbg$GEOID==rv_location$id],
-                 ' 0).'),
-                 
                  h4('Overall, the attributable burden rate for this CBG is',
                     rvs$poly_cbg$anr_pct_text[rvs$poly_cbg$GEOID==rv_location$id],
                     'which is ',
                     strong(rvs$poly_cbg$overall_anr_text[rvs$poly_cbg$GEOID==rv_location$id]), 
-                    ' than the Research Triangle average. 
-                    At this location, the CVD incidence rate was ',
-                    rvs$poly_cbg$cvd_text[rvs$poly_cbg$GEOID==rv_location$id],
-                    'and the daily average temperature during the summer of 2018
-                    was ',
-                    rvs$poly_cbg$temp_text[rvs$poly_cbg$GEOID==rv_location$id],
-                    '.')
+                    ' than the Research Triangle average.'),
+                 
+                 h4('This census block group is in the ', 
+                    strong(rvs$poly_cbg$cluster[rvs$poly_cbg$GEOID==rv_location$id]),
+                    'Group, meaning that', 
+                    strong(rvs$poly_cbg$risk_group_text1[rvs$poly_cbg$GEOID==rv_location$id]),
+                    rvs$poly_cbg$risk_group_text2[rvs$poly_cbg$GEOID==rv_location$id],
+                    '(Health Contribution ',
+                    rvs$poly_cbg$health_cont_sign[rvs$poly_cbg$GEOID==rv_location$id],
+                    ' 0 and (Heat Contribution ',
+                    rvs$poly_cbg$heat_cont_sign[rvs$poly_cbg$GEOID==rv_location$id],
+                    ' 0).')
       ))
+      # HTML(paste(h4(strong('Results for Census Block Group:',rv_location$id)),
+      #            
+      #            h4('This census block group is in the ', 
+      #            strong(rvs$poly_cbg$cluster[rvs$poly_cbg$GEOID==rv_location$id]),
+      #            'Group, meaning that the contribution of local CVD incidence is positive', 
+      #            strong(rvs$poly_cbg$health_cont_text[rvs$poly_cbg$GEOID==rv_location$id]), 
+      #            'than the Research Triangle area average (Health Contribution ',
+      #            rvs$poly_cbg$health_cont_sign[rvs$poly_cbg$GEOID==rv_location$id],
+      #            ' 0) and the summer average daily temperature is ',
+      #            strong(rvs$poly_cbg$heat_cont_text[rvs$poly_cbg$GEOID==rv_location$id]), 
+      #            'than the Research Triangle average (Heat Contribution ',
+      #            rvs$poly_cbg$heat_cont_sign[rvs$poly_cbg$GEOID==rv_location$id],
+      #            ' 0).'),
+      #            
+      #            h4('Overall, the attributable burden rate for this CBG is',
+      #               rvs$poly_cbg$anr_pct_text[rvs$poly_cbg$GEOID==rv_location$id],
+      #               'which is ',
+      #               strong(rvs$poly_cbg$overall_anr_text[rvs$poly_cbg$GEOID==rv_location$id]), 
+      #               ' than the Research Triangle average. 
+      #               At this location, the CVD incidence rate was ',
+      #               rvs$poly_cbg$cvd_text[rvs$poly_cbg$GEOID==rv_location$id],
+      #               'and the daily average temperature during the summer of 2018
+      #               was ',
+      #               rvs$poly_cbg$temp_text[rvs$poly_cbg$GEOID==rv_location$id],
+      #               '.')
+      # ))
     }
     else{
       HTML(paste(h4('Click on the map to see census block group information.')))
