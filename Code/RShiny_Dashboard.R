@@ -111,21 +111,21 @@ map_df <- cbg_comp_sf_plot %>%
                                   (anrate_pctile %% 10 == 2 & anrate_pctile!=12) ~ paste0(round(tot_an_rate, 1)," hospitalizations per 10k (",anrate_pctile,"nd percentile)"),
                                   (anrate_pctile %% 10 == 3 & anrate_pctile!=13) ~ paste0(round(tot_an_rate, 1)," hospitalizations per 10k (",anrate_pctile,"rd percentile)"),
                                   TRUE ~ paste0(round(tot_an_rate, 1)," hospitalizations per 10k (",anrate_pctile,"th percentile)"))) %>%
-  mutate(risk_group_text1 = case_when(cluster == "Dual Channel Risk" ~ "relatively high cardiovascular disease incidence and heat exposure",
+  mutate(risk_group_text1 = case_when(cluster == "Dual Channel Risk" ~ "both relatively high cardiovascular disease incidence and heat exposure",
                                      cluster == "Heat Driven Risk" ~ "relatively high heat exposure",
                                      cluster == "Health Driven Risk" ~ "relatively high cardiovascular disease incidence",
                                      cluster == "Low Risk" ~ "relatively low cardiovascular disease incidence and heat exposure")) %>%
-  mutate(risk_group_text2 = case_when(cluster == "Dual Channel Risk" ~ " contribute to the heat health burden ",
-                                     cluster == "Heat Driven Risk" ~ " contributes to the heat health burden ",
-                                     cluster == "Health Driven Risk" ~ " contributes to the heat health burden ",
-                                     cluster == "Low Risk" ~ " result in below average heat health burden ")) %>%
-  # mutate(health_cont_text = case_when(an_cvddiff1_rate<0 ~ "lower",
-  #                                     an_cvddiff1_rate>0 ~ "higher")) %>%
-  mutate(health_cont_sign = case_when(an_cvddiff1_rate<0 ~ "<",
+  mutate(risk_group_text2 = case_when(cluster == "Dual Channel Risk" ~ " contribute to the heat-attributable CVD burden rate ",
+                                     cluster == "Heat Driven Risk" ~ " contributes to the heat-attributable CVD burden rate ",
+                                     cluster == "Health Driven Risk" ~ " contributes to the heat-attributable CVD burden rate ",
+                                     cluster == "Low Risk" ~ " result in a below average heat-attributable CVD burden rate ")) %>%
+  mutate(health_cont_text = case_when(an_cvddiff1_rate<0 ~ "negative",
+                                      an_cvddiff1_rate>0 ~ "positive")) %>%
+  mutate(health_cont_sign = case_when(an_cvddiff1_rate<0 ~ "≤",
                                       an_cvddiff1_rate>0 ~ ">")) %>%
-  # mutate(heat_cont_text = case_when(an_tempdiff2_rate<0 ~ "lower",
-  #                                   an_tempdiff2_rate>0 ~ "higher")) %>%
-  mutate(heat_cont_sign = case_when(an_tempdiff2_rate<0 ~ "<",
+  mutate(heat_cont_text = case_when(an_tempdiff2_rate<0 ~ "negative",
+                                    an_tempdiff2_rate>0 ~ "positive")) %>%
+  mutate(heat_cont_sign = case_when(an_tempdiff2_rate<0 ~ "≤",
                                     an_tempdiff2_rate>0 ~ ">")) %>%
   mutate(overall_anr_text = case_when(tot_an_rate < 5.788092 ~ "lower",
                                       tot_an_rate > 5.788092 ~ "higher"))
@@ -363,7 +363,7 @@ plot_map <- function(data) {
                 smoothFactor = .3,
 
                 # set opacity of polygons
-                fillOpacity = .7,
+                fillOpacity = .65,
 
                 # specify that the each state should be colored per paletteNum()
                 fillColor = ~factpal(cluster),
@@ -398,7 +398,7 @@ leaflet() %>%
               smoothFactor = .3,
 
               # set opacity of polygons
-              fillOpacity = .8,
+              fillOpacity = .65,
 
               # specify that the each state should be colored per paletteNum()
               fillColor = ~cont_pal(tot_an_rate),
@@ -421,7 +421,8 @@ plot_demobar <- function(data, cbg_geoid){
   sex_comp <- ggplot(data[data$subgroup_type=="Sex" & data$GEOID %in% c("All Research Triangle",cbg_geoid),],
                      aes(x=var_label, y=pct_round, fill=area)) + #
     geom_bar(position="dodge",stat="identity",color="black") +
-    geom_text(aes(label=pct_round), vjust=-0.5, position=position_dodge(width=0.9), size=5) +
+    geom_text(aes(label=format(pct_round, nsmall=1)), vjust=-0.25, position=position_dodge(width=0.9), size=4.5) +
+    coord_cartesian(clip="off") +
     labs(y= "Percent", x = "Sex", fill="Geography") + # , fill = "CBG Attr. Rate Group"
     scale_y_continuous(limits=c(0,100), n.breaks=5) +
     scale_fill_manual(values = c("All Research Triangle"="gray50", "CBG"=pal2[2])) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
@@ -434,7 +435,8 @@ plot_demobar <- function(data, cbg_geoid){
   race_comp <- ggplot(data[data$subgroup_type=="Race" & data$var!="pct_native" & data$GEOID %in% c("All Research Triangle",cbg_geoid),],
                       aes(x=var_label, y=pct_round, fill=area)) + # exclude native bc not in model
     geom_bar(position="dodge",stat="identity",color="black") +
-    geom_text(aes(label=pct_round), vjust=-0.5, position=position_dodge(width=0.9), size=5) +
+    geom_text(aes(label=format(pct_round, nsmall=1)), vjust=-0.25, position=position_dodge(width=0.9), size=4.5) +
+    coord_cartesian(clip="off") +
     labs(y= "Percent", x = "Race", fill="Geography") +
     scale_y_continuous(limits=c(0,100), n.breaks=5) +
     scale_fill_manual(values = c("All Research Triangle"="gray50", "CBG"=pal2[2])) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
@@ -447,7 +449,8 @@ plot_demobar <- function(data, cbg_geoid){
   age_comp <- ggplot(data[data$subgroup_type=="Age" & data$GEOID %in% c("All Research Triangle",cbg_geoid),],
                      aes(x=var_label, y=pct_round, fill=area)) + 
     geom_bar(position="dodge",stat="identity",color="black") +
-    geom_text(aes(label=pct_round), vjust=-0.5, position=position_dodge(width=0.9), size=5) +
+    geom_text(aes(label=format(pct_round, nsmall=1)), vjust=-0.25, position=position_dodge(width=0.9), size=4.5) +
+    coord_cartesian(clip="off") +
     labs(y= "Percent", x = "Age", fill="Geography") +
     scale_y_continuous(limits=c(0,100), n.breaks=5) +
     scale_fill_manual(values = c("All Research Triangle"="gray50", "CBG"=pal2[2])) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
@@ -460,7 +463,8 @@ plot_demobar <- function(data, cbg_geoid){
   other_comp <- ggplot(data[data$subgroup_type=="Poverty + Education" & data$GEOID %in% c("All Research Triangle",cbg_geoid),],
                        aes(x=var_label, y=pct_round, fill=area)) + #
     geom_bar(position="dodge",stat="identity",color="black") +
-    geom_text(aes(label=pct_round), vjust=-0.5, position=position_dodge(width=0.9), size=5) +
+    geom_text(aes(label=format(pct_round, nsmall=1)), vjust=-0.25, position=position_dodge(width=0.9), size=4.5) +
+    coord_cartesian(clip="off") +
     labs(y= "Percent", x = "Poverty + Education", fill="Geography") +
     scale_y_continuous(limits=c(0,100), n.breaks=5) +
     scale_fill_manual(values = c("All Research Triangle"="gray50", "CBG"=pal2[2])) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
@@ -480,7 +484,8 @@ plot_demobar <- function(data, cbg_geoid){
 sex_comp_default <- ggplot(demobar_allrtp[demobar_allrtp$subgroup_type=="Sex",],
                    aes(x=var_label, y=pct_round, fill=area)) + #
   geom_bar(position="dodge",stat="identity",color="black") +
-  geom_text(aes(label=pct_round), vjust=-0.5, position=position_dodge(width=0.9), size=5) +
+  geom_text(aes(label=format(pct_round, nsmall=1)), vjust=-0.25, position=position_dodge(width=0.9), size=4.5) +
+  coord_cartesian(clip="off") +
   labs(y= "Percent", x = "Sex", fill = "Geography") + # , fill = "CBG Attr. Rate Group"
   scale_y_continuous(limits=c(0,100), n.breaks=5) +
   scale_fill_manual(values = c("All Research Triangle"="gray50")) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
@@ -493,7 +498,8 @@ sex_comp_default <- ggplot(demobar_allrtp[demobar_allrtp$subgroup_type=="Sex",],
 race_comp_default <- ggplot(demobar_allrtp[demobar_allrtp$subgroup_type=="Race" & demobar_allrtp$var!="pct_native",],
                     aes(x=var_label, y=pct_round, fill=area)) + # exclude native bc not in model
   geom_bar(position="dodge",stat="identity",color="black") +
-  geom_text(aes(label=pct_round), vjust=-0.5, position=position_dodge(width=0.9), size=5) +
+  geom_text(aes(label=format(pct_round, nsmall=1)), vjust=-0.25, position=position_dodge(width=0.9), size=4.5) +
+  coord_cartesian(clip="off") +
   labs(y= "Percent", x = "Race", fill = "Geography") +
   scale_y_continuous(limits=c(0,100), n.breaks=5) +
   scale_fill_manual(values = c("All Research Triangle"="gray50")) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
@@ -506,7 +512,8 @@ race_comp_default <- ggplot(demobar_allrtp[demobar_allrtp$subgroup_type=="Race" 
 age_comp_default <- ggplot(demobar_allrtp[demobar_allrtp$subgroup_type=="Age",],
                    aes(x=var_label, y=pct_round, fill=area)) + #
   geom_bar(position="dodge",stat="identity",color="black") +
-  geom_text(aes(label=pct_round), vjust=-0.5, position=position_dodge(width=0.9), size=5) +
+  geom_text(aes(label=format(pct_round, nsmall=1)), vjust=-0.25, position=position_dodge(width=0.9), size=4.5) +
+  coord_cartesian(clip="off") +
   labs(y= "Percent", x = "Age", fill = "Geography") +
   scale_y_continuous(limits=c(0,100), n.breaks=5) +
   scale_fill_manual(values = c("All Research Triangle"="gray50")) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
@@ -519,7 +526,8 @@ age_comp_default <- ggplot(demobar_allrtp[demobar_allrtp$subgroup_type=="Age",],
 other_comp_default <- ggplot(demobar_allrtp[demobar_allrtp$subgroup_type=="Poverty + Education",],
                      aes(x=var_label, y=pct_round, fill=area)) + #
   geom_bar(position="dodge",stat="identity",color="black") +
-  geom_text(aes(label=pct_round), vjust=-0.5, position=position_dodge(width=0.9), size=5) +
+  geom_text(aes(label=format(pct_round, nsmall=1)), vjust=-0.25, position=position_dodge(width=0.9), size=4.5) +
+  coord_cartesian(clip="off") +
   labs(y= "Percent", x = "Poverty + Education", fill = "Geography") +
   scale_y_continuous(limits=c(0,100), n.breaks=5) +
   scale_fill_manual(values = c("All Research Triangle"="gray50")) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
@@ -709,14 +717,19 @@ server <- shinyServer(function(input, output) {
                  
                  h4('This census block group is in the ', 
                     strong(rvs$poly_cbg$cluster[rvs$poly_cbg$GEOID==rv_location$id]),
-                    'Group, meaning that', 
+                    'Group, meaning that the Health Contribution is ', 
+                    rvs$poly_cbg$health_cont_text[rvs$poly_cbg$GEOID==rv_location$id],
+                    '(',
+                    rvs$poly_cbg$health_cont_sign[rvs$poly_cbg$GEOID==rv_location$id],
+                    '0) and the Heat-Contribution is ',
+                    rvs$poly_cbg$heat_cont_text[rvs$poly_cbg$GEOID==rv_location$id],
+                    '(',
+                    rvs$poly_cbg$heat_cont_sign[rvs$poly_cbg$GEOID==rv_location$id],
+                    '0).',
+                    'This indicates that',
                     strong(rvs$poly_cbg$risk_group_text1[rvs$poly_cbg$GEOID==rv_location$id]),
                     rvs$poly_cbg$risk_group_text2[rvs$poly_cbg$GEOID==rv_location$id],
-                    '(Health Contribution ',
-                    rvs$poly_cbg$health_cont_sign[rvs$poly_cbg$GEOID==rv_location$id],
-                    ' 0 and (Heat Contribution ',
-                    rvs$poly_cbg$heat_cont_sign[rvs$poly_cbg$GEOID==rv_location$id],
-                    ' 0).')
+                    'in this CBG.')
       ))
       # HTML(paste(h4(strong('Results for Census Block Group:',rv_location$id)),
       #            
