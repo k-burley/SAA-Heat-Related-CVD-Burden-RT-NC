@@ -276,10 +276,12 @@ demobar_df <- cbg_comp_sf_plot %>%
 pal <- wes_palette("Zissou1", n = 5) 
 pal2 <- wes_palette("Darjeeling1", n = 5) 
 
-green_cont_pal <- colorRampPalette(c('#84EFD8', '#034036'),100)
+# green_cont_pal <- colorRampPalette(c('#84EFD8', '#034036'),100)
+
+green_cont_pal <- colorRampPalette(c('#d2f9f1', "#00A08A", "#006E5F", '#003930'))(4) # colorRampPalette(c('#d2f9f1', "#00A08A", "#0B7E6D", "#006E5F", '#024F43', '#003930'))(6)
 
 cont_pal <- colorNumeric(
-  palette = "inferno",
+  palette = green_cont_pal, # "inferno"
   domain = range(map_df$tot_an_rate)
 )
 
@@ -398,7 +400,7 @@ leaflet() %>%
               smoothFactor = .3,
 
               # set opacity of polygons
-              fillOpacity = .65,
+              fillOpacity = .75,
 
               # specify that the each state should be colored per paletteNum()
               fillColor = ~cont_pal(tot_an_rate),
@@ -651,7 +653,7 @@ server <- shinyServer(function(input, output) {
                     smoothFactor = .3,
                     
                     # set opacity of polygons
-                    fillOpacity = .8,
+                    fillOpacity = .75,
                     
                     # specify that the each state should be colored per paletteNum()
                     fillColor = ~cont_pal(tot_an_rate),
