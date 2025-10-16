@@ -107,6 +107,8 @@ cbg_comp_sf_plot <- cbg_comp_sf %>%
   mutate(decile = ntile(tot_an_rate,10)) %>%
   mutate(top_ten = ifelse(decile == 10,"Top 10%","Bottom 90%"))
 
+coordinates <- read_xlsx("../Data/Original/Geography/Raleigh_Durham_Coordinates.xlsx")
+
 rm(cbg_comp, cbg_sf, cbg_comp_sf, decomp, cbg_an_final_25)
 
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -343,11 +345,14 @@ bar_comp <- ggarrange(sex_comp, race_comp, age_comp, other_comp,
 # MAP
 tot_an_rate_sf <- ggplot(cbg_comp_sf_plot) +
   geom_sf(aes(fill=an_rate_qtile, color=top_ten),
-          linewidth = ifelse(cbg_comp_sf_plot$top_ten =="Top 10%", 1, 0.1)) +
+          linewidth = ifelse(cbg_comp_sf_plot$top_ten =="Top 10%", 1, 0.01)) +
   scale_fill_gradient(name = "CBG Attr. Rate Quantile",
-                      high = "#034036", low = "#84EFD8", ) + 
+                      high = "#034036", low = "#84EFD8", ) +
   scale_color_manual(values=c("Bottom 90%"="black","Top 10%"=pal2[1]),
                      name = "CBG Attr. Rate Group") +
+  geom_point(data = coordinates, aes(Longitude, Latitude), color="black") +
+  geom_text(data = coordinates, aes(Longitude, Latitude, label = Name),
+            vjust = 1.2, hjust = 1.2, color= "black", size=6) +
   theme_minimal() +
   theme(legend.position = "right",
         legend.box.just = "left",
@@ -371,6 +376,8 @@ rm(hotspots, cbg_pop_totals, sex_totals, race_totals, age_totals,
 ###~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 # Note: this code creates individual map components (final figure created in Canva)
 
+coordinates_sf <- st_as_sf(coordinates, coords=c("Longitude","Latitude"))
+
 temp_1km <- tm_shape(cbg_comp_sf_plot) +
   tm_polygons("tmean_f", 
               style="cont", 
@@ -378,7 +385,8 @@ temp_1km <- tm_shape(cbg_comp_sf_plot) +
               palette = pal_red_cont(100)) + # "Reds"
   tm_layout(main.title="High Resolution (1km Gridded)",
             legend.position=c("left","TOP"),
-            main.title.size=1)
+            main.title.size=1) 
+temp_1km
 
 tmap_save(temp_1km, "../Data/Figures/temp_1km.png", height=4.5, width=4)
 
@@ -388,6 +396,9 @@ temp_tps <- tm_shape(cbg_comp_sf_plot) +
               style="cont", 
               title="Degrees F",
               palette = pal_red_cont(100)) + # "Reds"
+  tm_shape(coordinates_sf) +
+  tm_dots(col = "black", size = 0.4) + 
+  tm_text("Name", col = "black", size = 1, xmod=-0.8, ymod=-0.8) +
   tm_layout(main.title="Low Resolution (WS Interpolated)",
             legend.position=c("left","TOP"),
             main.title.size=1)
@@ -399,10 +410,14 @@ temp_diff <- tm_shape(cbg_comp_sf_plot) +
               style="cont", 
               title="Degrees F",
               palette = pal_red_cont(100)) + # "Reds"
+  tm_shape(coordinates_sf) +
+  tm_dots(col = "black", size = 0.4) + 
+  tm_text("Name", col = "black", size = 1, xmod=-0.8, ymod=-0.8) +
   tm_layout(main.title="A. Summer Avg. Temperature Difference",
             legend.position=c("left","TOP"),
             main.title.size=1)
 
+temp_diff
 tmap_save(temp_diff, "../Data/Figures/temp_diff.png", height=4.5, width=4)
 
 anr_1km <- tm_shape(cbg_comp_sf_plot) +
@@ -433,6 +448,9 @@ rate_diff <- tm_shape(cbg_comp_sf_plot) +
               style="quantile", 
               title = "AN per 10k",
               palette = pal_green_cont(10)) + # "Reds
+  tm_shape(coordinates_sf) +
+  tm_dots(col = "black", size = 0.4) + 
+  tm_text("Name", col = "black", size = 1, xmod=-0.8, ymod=-0.8) +
   tm_layout(main.title="B. Attributable Rate Difference",
             legend.position=c("left","TOP"),
             main.title.size=1)
@@ -533,6 +551,9 @@ cluster_map_gg <- ggplot(cluster) +
                     breaks = c("Low Risk", "Health Driven Risk", "Heat Driven Risk", "Dual Channel Risk"),
                     values = c("#8AE3FE", "#00A08A","#fdae61","#F21A00")) +
   # values=c(lighten(pal2[5],0.5), pal2[2], "#fdae61", pal[5]))) 
+  geom_point(data = coordinates, aes(Longitude, Latitude), color="black") +
+  geom_text(data = coordinates, aes(Longitude, Latitude, label = Name),
+            vjust = 1.2, hjust = 1.2, color= "black", size=5) +
   theme_bw() +
   theme(axis.text = element_blank(),
         legend.position = "none",
