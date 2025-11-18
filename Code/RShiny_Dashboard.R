@@ -428,7 +428,7 @@ plot_demobar <- function(data, cbg_geoid){
     labs(y= "Percent", x = "Sex", fill="Geography") + # , fill = "CBG Attr. Rate Group"
     scale_y_continuous(limits=c(0,100), n.breaks=5) +
     scale_fill_manual(values = c("All Research Triangle"="gray50", "CBG"=pal2[2])) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
-    theme_bw() +
+    theme_minimal() +
     theme(panel.grid = element_blank(),
           text = element_text(size = 15),
           axis.text.x = element_text(size=12))
@@ -442,7 +442,7 @@ plot_demobar <- function(data, cbg_geoid){
     labs(y= "Percent", x = "Race", fill="Geography") +
     scale_y_continuous(limits=c(0,100), n.breaks=5) +
     scale_fill_manual(values = c("All Research Triangle"="gray50", "CBG"=pal2[2])) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
-    theme_bw() +
+    theme_minimal() +
     theme(panel.grid = element_blank(),
           text = element_text(size = 15),
           axis.text.x = element_text(size=12))
@@ -456,7 +456,7 @@ plot_demobar <- function(data, cbg_geoid){
     labs(y= "Percent", x = "Age", fill="Geography") +
     scale_y_continuous(limits=c(0,100), n.breaks=5) +
     scale_fill_manual(values = c("All Research Triangle"="gray50", "CBG"=pal2[2])) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
-    theme_bw() +
+    theme_minimal() +
     theme(panel.grid = element_blank(),
           text = element_text(size = 15),
           axis.text.x = element_text(size=12))
@@ -470,7 +470,7 @@ plot_demobar <- function(data, cbg_geoid){
     labs(y= "Percent", x = "Poverty + Education", fill="Geography") +
     scale_y_continuous(limits=c(0,100), n.breaks=5) +
     scale_fill_manual(values = c("All Research Triangle"="gray50", "CBG"=pal2[2])) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
-    theme_bw() +
+    theme_minimal() +
     theme(panel.grid = element_blank(),
           text = element_text(size = 15),
           axis.text.x = element_text(size=12))
@@ -491,7 +491,7 @@ sex_comp_default <- ggplot(demobar_allrtp[demobar_allrtp$subgroup_type=="Sex",],
   labs(y= "Percent", x = "Sex", fill = "Geography") + # , fill = "CBG Attr. Rate Group"
   scale_y_continuous(limits=c(0,100), n.breaks=5) +
   scale_fill_manual(values = c("All Research Triangle"="gray50")) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
-  theme_bw() +
+  theme_minimal() +
   theme(panel.grid = element_blank(),
         text = element_text(size = 15),
         axis.text.x = element_text(size=12))
@@ -505,7 +505,7 @@ race_comp_default <- ggplot(demobar_allrtp[demobar_allrtp$subgroup_type=="Race" 
   labs(y= "Percent", x = "Race", fill = "Geography") +
   scale_y_continuous(limits=c(0,100), n.breaks=5) +
   scale_fill_manual(values = c("All Research Triangle"="gray50")) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
-  theme_bw() +
+  theme_minimal() +
   theme(panel.grid = element_blank(),
         text = element_text(size = 15),
         axis.text.x = element_text(size=12))
@@ -519,7 +519,7 @@ age_comp_default <- ggplot(demobar_allrtp[demobar_allrtp$subgroup_type=="Age",],
   labs(y= "Percent", x = "Age", fill = "Geography") +
   scale_y_continuous(limits=c(0,100), n.breaks=5) +
   scale_fill_manual(values = c("All Research Triangle"="gray50")) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
-  theme_bw() +
+  theme_minimal() +
   theme(panel.grid = element_blank(),
         text = element_text(size = 15),
         axis.text.x = element_text(size=12))
@@ -533,7 +533,7 @@ other_comp_default <- ggplot(demobar_allrtp[demobar_allrtp$subgroup_type=="Pover
   labs(y= "Percent", x = "Poverty + Education", fill = "Geography") +
   scale_y_continuous(limits=c(0,100), n.breaks=5) +
   scale_fill_manual(values = c("All Research Triangle"="gray50")) + # "Top 10%"=pal[5], "Bottom 90%"=lighten(pal2[5],0.5)
-  theme_bw() +
+  theme_minimal() +
   theme(panel.grid = element_blank(),
         text = element_text(size = 15),
         axis.text.x = element_text(size=12))
