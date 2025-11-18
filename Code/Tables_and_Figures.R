@@ -296,7 +296,7 @@ sex_comp <- ggplot(hotspots[hotspots$subgroup_type=="Sex",],
                    aes(x=var_label, y=pct_round, fill=top_ten)) + # , color=top_ten
   geom_bar(position="dodge",stat="identity") + # ,color="black"
   geom_text(aes(label=pct_round, size=7), vjust=-0.5, position=position_dodge(width=0.9), size=3.75) +
-  labs(y= "Percent", x = "Sex", fill = "CBG Attr. Rate Group") +
+  labs(y= "Percent", x = "Sex", fill = "Heat Attr. Rate Group") +
   scale_y_continuous(limits=c(0,100), n.breaks=10) +
   scale_fill_manual(values = c("Top 10%"="#034036", "Bottom 90%"="#84EFD8")) +
   theme_bw() +
@@ -308,7 +308,7 @@ race_comp <- ggplot(hotspots[hotspots$subgroup_type=="Race" & hotspots$var!="pct
                     aes(x=var_label, y=pct_round, fill=top_ten)) + # exclude native bc not in model, , color=top_ten
   geom_bar(position="dodge",stat="identity") +
   geom_text(aes(label=pct_round, size=7), vjust=-0.5, position=position_dodge(width=0.9), size=3.75) +
-  labs(y= "Percent", x = "Race", fill = "CBG Attr. Rate Group") +
+  labs(y= "Percent", x = "Race", fill = "Heat Attr. Rate Group") +
   scale_y_continuous(limits=c(0,100), n.breaks=10) +
   scale_fill_manual(values = c("Top 10%"="#034036", "Bottom 90%"="#84EFD8")) +
   theme_bw() +
@@ -320,7 +320,7 @@ age_comp <- ggplot(hotspots[hotspots$subgroup_type=="Age",],
                    aes(x=var_label, y=pct_round, fill=top_ten)) + # , color=top_ten
   geom_bar(position="dodge",stat="identity") +
   geom_text(aes(label=pct_round, size=7), vjust=-0.5, position=position_dodge(width=0.9), size=3.75) +
-  labs(y= "Percent", x = "Age", fill = "CBG Attr. Rate Group") +
+  labs(y= "Percent", x = "Age", fill = "Heat Attr. Rate Group") +
   scale_y_continuous(limits=c(0,100), n.breaks=10) +
   scale_fill_manual(values = c("Top 10%"="#034036", "Bottom 90%"="#84EFD8")) +
   theme_bw() +
@@ -332,7 +332,7 @@ other_comp <- ggplot(hotspots[hotspots$subgroup_type=="Poverty + Education",],
                      aes(x=var_label, y=pct_round, fill=top_ten)) + # , color=top_ten
   geom_bar(position="dodge",stat="identity") +
   geom_text(aes(label=pct_round, size=7), vjust=-0.5, position=position_dodge(width=0.9), size=3.75) +
-  labs(y= "Percent", x = "Poverty + Education", fill = "CBG Attr. Rate Group") +
+  labs(y= "Percent", x = "Poverty + Education", fill = "Heat Attr. Rate Group") +
   scale_y_continuous(limits=c(0,100), n.breaks=10) +
   scale_fill_manual(values = c("Top 10%"="#034036", "Bottom 90%"="#84EFD8")) +
   theme_bw() +
@@ -346,10 +346,10 @@ bar_comp <- ggarrange(sex_comp, race_comp, age_comp, other_comp,
 tot_an_rate_sf <- ggplot(cbg_comp_sf_plot) +
   geom_sf(aes(fill=an_rate_qtile, color=top_ten),
           linewidth = ifelse(cbg_comp_sf_plot$top_ten =="Top 10%", 1, 0.01)) +
-  scale_fill_gradient(name = "CBG Attr. Rate Quantile",
+  scale_fill_gradient(name = "Heat Attr. Rate Quantile",
                       high = "#034036", low = "#84EFD8", ) +
   scale_color_manual(values=c("Bottom 90%"="black","Top 10%"=pal2[1]),
-                     name = "CBG Attr. Rate Group") +
+                     name = "Heat Attr. Rate Group") +
   geom_point(data = coordinates, aes(Longitude, Latitude), color="black") +
   geom_text(data = coordinates, aes(Longitude, Latitude, label = Name),
             vjust = 1.2, hjust = 1.2, color= "black", size=6) +
@@ -361,7 +361,7 @@ tot_an_rate_sf <- ggplot(cbg_comp_sf_plot) +
         panel.background=element_rect(fill="white"),
         text=element_text(size=13),
         legend.text=element_text(size=12)) + #11.5 for 6/12) +
-  ggtitle("Heat-Attributable CVD Hospitalization Rate per 10k")
+  ggtitle("Heat Attributable CVD Hospitalization Rate per 10k")
 tot_an_rate_sf
 
 # COMBINE
