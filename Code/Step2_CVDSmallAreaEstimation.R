@@ -7,6 +7,10 @@
 # Created by: Katherine Burley Farr
 # Contact: kburley@ad.unc.edu
 # Affiliation: UNC Department of Public Policy, Data-Driven EnviroLab
+
+# Note: Some of the data used in this step cannot be publicly disclosed by the terms of the Data Use Agreement with US Centers for Medicare and Medicaid Services. 
+#       These specific datasets are not included on the public GitHub and the filepaths for them were removed from the script. 
+
 ################################################################################
 
 rm(list = ls())
@@ -35,7 +39,7 @@ rm(list = ls())
 
 ## 1. Bring in data ----
 
- cvd_counts2<-read_delim("O:\\PRIV\\IRBData\\Medicare\\Project_Folders\\SAEproject\\RTP_CVD_ZCTA_SubgroupCombination_20092019.csv",delim = "\t")
+ cvd_counts2<-read_delim("RTP_CVD_ZCTA_SubgroupCombination_20092019.csv",delim = "\t") # filepath removed
  
  CVD_data<-cvd_counts2 %>%
     mutate(ZCTA = str_pad(ZCTA_CC,5,"0",side = "left"),
@@ -52,11 +56,11 @@ rm(list = ls())
  rm(cvd_counts2)
 #-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------   
 
-rtp_zcta<-read_csv("O:\\PRIV\\IRBData\\Medicare\\Project_Folders\\Multivariate\\Univariate_Temperature_CVD_Models\\Input_Data\\rtp_zip_AVGTemp.csv")
+rtp_zcta<-read_csv("rtp_zip_AVGTemp.csv") # filepath removed
 names(rtp_zcta)
 rtp_zcta<-as.character(unique(rtp_zcta$ZCTA.x))
 
-total_bene2<-read_delim("O:\\PRIV\\IRBData\\Medicare\\Project_Folders\\SAEproject\\RTP_TotalBENE_ZCTA_SubgroupCombination_20092019.csv",delim = "\t")
+total_bene2<-read_delim("RTP_TotalBENE_ZCTA_SubgroupCombination_20092019.csv",delim = "\t") # filepath removed
 total_bene_df<-total_bene2 %>%
   group_by(ZCTA) %>%
   filter(BASF_YR_NUM == 2018) %>%

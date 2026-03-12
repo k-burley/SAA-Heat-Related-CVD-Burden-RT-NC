@@ -5,9 +5,13 @@
 # Following Zhang et al. 2014:
   # Measures: Desc stats, Pearson corr, MSE, MAD
 
-# Author: Katherine Burley Farr
+# Author: Katherine Burley Farr, Melissa McInroe
 # Contact: kburley@ad.unc.edu
 # Affiliation: UNC Department of Public Policy, Data-Driven EnviroLab
+
+# Note: Some of the data used in this step cannot be publicly disclosed by the terms of the Data Use Agreement with US Centers for Medicare and Medicaid Services. 
+#       These specific datasets are not included on the public GitHub and the filepaths for them were removed from the script. 
+
 ################################################################################
 
 rm(list = ls())
@@ -37,7 +41,7 @@ rm(list = ls())
 
 # Direct, Annual ZCTA Level CDV Hospitalization Totals from EPA
 # Using data below as a placeholder!
-zcta_annual_direct <- read.delim("O:\\PRIV\\IRBData\\Medicare\\Project_Folders\\SAEproject\\RTP_CVDIND_Year2018.csv", header = TRUE, sep = "\t") %>%
+zcta_annual_direct <- read.delim("RTP_CVDIND_Year2018.csv", header = TRUE, sep = "\t") %>% # filepath removed
   rename("total_CVD_direct" = "TOTAL") %>%
   select(ZCTA, total_CVD_direct)
 
