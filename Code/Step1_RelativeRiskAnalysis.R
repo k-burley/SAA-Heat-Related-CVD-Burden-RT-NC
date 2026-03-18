@@ -25,12 +25,9 @@
 #       termPredictors = FALSE, ridge = 1e-08, ...)
 #
 
-#Created on: April 2,2024
-#Created by: Cassie O'Lenick
-
-#Updated on: December 26,2024 - Melissa - updated code to work with new datasets
-## Update on February 26, 2025 - Melissa - We will use the zipcode data sets but only use zipcodes that are the same as ZCTA. 
-
+# Updated on: December 26,2024 - Melissa
+# Note: Some of the data used in this step cannot be publicly disclosed by the terms of the Data Use Agreement with US Centers for Medicare and Medicaid Services. 
+#       These specific datasets are not included on the public GitHub and the filepaths for them were removed from the script. 
 
 #################################################################################
 
@@ -63,19 +60,7 @@ library(dplyr)
 library(arrow)
 library(readxl)
 
-###############################################
-# WORKING DIRECTORY
-setwd("O:\\PRIV\\IRBData\\Medicare\\Project_Folders\\Multivariate\\Univariate_Temperature_CVD_Models")
-getwd()
-#################################################
-
-##################################################################################
-####################### DATA DIRECTORIES ####################################
-
-in_dir  <- "O:/PRIV/IRBData/Medicare/Project_Folders/Multivariate/Univariate_Temperature_CVD_Models/Input_Data/"
-out_dir <- "O:/PRIV/IRBData/Medicare/Project_Folders/Multivariate/Univariate_Temperature_CVD_Models/RTP_Models/Model_Output/Primary/ZCTA_Models_02_26_2025/"
-med_in_dir  <- "O:/PRIV/IRBData/Medicare/Project_Folders/Multivariate/DFForDataLink_noFilter/"
-
+# Filepaths removed for in_dir, out_dir, med_in_dir
 
 ##################################################################################
 ##################### SECTION 3 - Model Parameters ##############################
@@ -86,7 +71,7 @@ med_in_dir  <- "O:/PRIV/IRBData/Medicare/Project_Folders/Multivariate/DFForDataL
 # Define all of the formulas to be used in the modeling loop
 
 # ###############################################################################
-zip_zcta_crosswalk<-read.csv("O:\\PRIV\\IRBData\\Medicare\\Project_Folders\\SAEproject\\RTP_GitHubFiles_and_Output\\RTP_ZipcodeZCTA_crosswalk2009to2020.csv", sep="\t", header=T)
+zip_zcta_crosswalk<-read.csv("RTP_ZipcodeZCTA_crosswalk2009to2020.csv", sep="\t", header=T) # filepath removed
 avg_num_bene_df<-fread(paste0(in_dir,"AVGNUMBENE_20092019_120CBSA_ZIP.csv"), drop = 1)
 avg_num_bene_df$ZIP<-str_pad(avg_num_bene_df$ZIP,5,"0",side = "left")
 #
@@ -153,7 +138,7 @@ zcta_merged_list<-unique(rtp_temp_df$ZCTA)
 #   summarise(sum(CVD_TOTAL, na.rm = T))
 # 
 # med_df$ZCTA<-med_df$ZIP
-# noaa_df<-read.csv("C:\\Users\\emcinroe\\Environmental Protection Agency (EPA)\\CRB Exposure - General\\NOAA_DailyWeatherData_2009-2021.csv")
+# noaa_df<-read.csv("NOAA_DailyWeatherData_2009-2021.csv") # filepath removed
 # noaa_df<- noaa_df %>%
 #   dplyr::select(ZCTA,DATE,RH_prct) %>%
 #   mutate(Year = year(DATE),

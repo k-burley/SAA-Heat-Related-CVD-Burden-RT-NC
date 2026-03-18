@@ -35,6 +35,7 @@ rm(list = ls())
   library(tmap)
   library(waterfalls)
   library(cowplot)
+  library(fmsb)
 }
 
 ### Prepare Color Palettes ---
@@ -542,7 +543,12 @@ cluster_demographics <- cluster %>%
                             metric == "pct_hu_rented" ~ "Renter Occupied Housing Units",
                             metric == "pct_nonwhite" ~ "Non-White Population",
                             metric == "pct_rural_pop" ~ "Rural Population",
-                            metric == "pct_hh_below_pl" ~ "Households Below Poverty Level"))
+                            metric == "pct_hh_below_pl" ~ "Households Below Poverty Level")) %>%
+  mutate(labels2 = case_when(metric == "pct_w_bach" ~ "% Bach.\n Degree +",
+                             metric == "pct_hu_rented" ~ "% Renter",
+                             metric == "pct_nonwhite" ~ "% Non-White",
+                             metric == "pct_rural_pop" ~ "% Rural",
+                             metric == "pct_hh_below_pl" ~ "% Below\n Poverty\n Level"))
 
 # PLOT TOGETHER:
 cluster_map_gg <- ggplot(cluster) +
@@ -559,7 +565,13 @@ cluster_map_gg <- ggplot(cluster) +
         legend.position = "none",
         panel.grid=element_blank(),
         legend.text=element_text(size=16),
-        plot.background = element_blank())
+        plot.background = element_blank(),
+        panel.border = element_blank(),
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
+        axis.ticks = element_blank())
 
 cluster_map_gg
 ggsave("../Data/Figures/Fig4_Maps.png", height=4, width=4, units="in", dpi=300)
@@ -584,10 +596,84 @@ demo_bar <- ggplot(cluster_demographics) +
 demo_bar
 ggsave("../Data/Figures/Fig4_Bars.png", height=4, width=4, units="in", dpi=300)
 
+radar_plot_maxmin <- 
+  data.frame(
+    risk_group = c("Max","Min"),
+    pct_w_bach = c(100,0),
+    pct_hh_below_pl = c(100,0),
+    pct_hu_rented = c(100,0),
+    pct_nonwhite = c(100,0),
+    pct_rural_pop = c(100,0), 
+    stringsAsFactors = FALSE 
+  ) %>%
+  rename(`% Bach.\n Degree +` = pct_w_bach,
+         `% Below\n Poverty\n Level` = pct_hh_below_pl,
+         `% Renter` = pct_hu_rented,
+         `% Non-White` = pct_nonwhite,
+         `% Rural` = pct_rural_pop)
+
+# Radar Plot
+
+radar_plot_groups <- cluster_demographics %>%
+  select(risk_group, percentage, labels2) %>%
+  pivot_wider(names_from = labels2, values_from = percentage)
+
+radar_plot_data <- radar_plot_maxmin %>%
+  bind_rows(radar_plot_groups) %>%
+  select(risk_group, `% Non-White`, everything())
+
+# Data for each radar plot
+lowrisk_data <- radar_plot_data %>%
+  filter(risk_group %in% c("Max","Min","Low Risk")) %>%
+  select(-risk_group)
+
+healthdriven_data <- radar_plot_data %>%
+  filter(risk_group %in% c("Max","Min","Health Driven Risk")) %>%
+  select(-risk_group)
+
+heatdriven_data <- radar_plot_data %>%
+  filter(risk_group %in% c("Max","Min","Heat Driven Risk")) %>%
+  select(-risk_group)
+
+dualchannel_data <- radar_plot_data %>%
+  filter(risk_group %in% c("Max","Min","Dual Channel Risk")) %>%
+  select(-risk_group)
+
+# Plot Radar Plots
+png(filename = "../Data/Figures/Fig4_Radar.png", width = 8, height = 8, units = "in", res = 300)
+radar_plot <- ~{
+  par(mfrow = c(2, 2), mar = c(1, 0.2, 1, 0.2))
+  
+  radarchart(lowrisk_data,
+             pcol = "#8AE3FE", pfcol = scales::alpha("#8AE3FE", 0.7), 
+             plwd = 2, plty = 1, title = "Low Risk") 
+  
+  
+  
+  radarchart(healthdriven_data,
+             pcol = "#00A08A", pfcol = scales::alpha("#00A08A", 0.7), 
+             plwd = 2, plty = 1, title = "Health Driven Risk") 
+    
+  
+  
+  radarchart(heatdriven_data,
+             pcol = "#fdae61", pfcol = scales::alpha("#fdae61", 0.7), 
+             plwd = 2, plty = 1, title = "Heat Driven Risk") 
+  
+  
+  
+  radarchart(dualchannel_data,
+             pcol = "#F21A00", pfcol = scales::alpha("#F21A00", 0.7), 
+             plwd = 2, plty = 1, title = "Dual Channel Risk") 
+# dev.off()
+}
+# radar_plot
+cluster_with_radar <- plot_grid(cluster_map_gg, radar_plot, ncol = 2, labels = c("", ""), rel_widths = c(1, 1.5))
+save_plot("../Data/Figures/Fig4_Cluster.png", cluster_with_radar, base_height=6, base_width=12, units="in")
 
 ggarrange(cluster_map_gg, demo_bar, align = "h")
 combined_cluster <- ggarrange(cluster_map_gg, demo_bar, align = "h") # common.legend=T, legend="bottom", 
-combined_cluster
+combined_cluster("../")
 
 # Estimate Population by Cluster - values in text
 total_pop_by_cbg <- read_csv("../Data/Original/Census/Census_P12_Tables.csv") %>%
