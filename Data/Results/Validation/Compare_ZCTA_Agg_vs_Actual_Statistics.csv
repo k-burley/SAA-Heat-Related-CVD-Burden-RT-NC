@@ -1,0 +1,11 @@
+"","stat","aggregation_type","value"
+"1","Pearson Correlation Coefficient","Assigned",0.925807515150629
+"2","Spearman Correlation Coefficient","Assigned",0.939415148169458
+"3","Pearson Correlation Coefficient","Weighted",0.981197711118778
+"4","Spearman Correlation Coefficient","Weighted",0.983101045296167
+"5","Mean Squared Error","Assigned",23911.0768580881
+"6","Mean Absolute Difference","Assigned",103.976965786094
+"7","Mean Absolute Percentage Error","Assigned",0.233200817375961
+"8","Mean Squared Error","Weighted",7649.83146388075
+"9","Mean Absolute Difference","Weighted",60.7897485586714
+"10","Mean Absolute Percentage Error","Weighted",0.148405547981519
