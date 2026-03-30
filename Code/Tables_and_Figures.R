@@ -384,12 +384,13 @@ temp_1km <- tm_shape(cbg_comp_sf_plot) +
               style="cont", 
               title="Degrees F",
               palette = pal_red_cont(100)) + # "Reds"
-  tm_layout(main.title="High Resolution (1km Gridded)",
+  tm_layout(main.title="Medium Resolution (1km Gridded)",
+            legend.position=c("bottom"),
             legend.position=c("left","TOP"),
             main.title.size=1) 
 temp_1km
 
-tmap_save(temp_1km, "../Data/Figures/temp_1km.png", height=4.5, width=4)
+tmap_save(temp_1km, "../Data/Figures/temp_1km_test.png", height=4.5, width=4)
 
 
 temp_tps <- tm_shape(cbg_comp_sf_plot) +
@@ -463,7 +464,7 @@ scatter <- ggplot(cbg_comp_sf_plot, aes(x=tmean_f, y=temp_diff)) +
   geom_point() +
   geom_smooth(method = "lm") +
   theme_minimal() +
-  labs(x= "High Res. Summer Avg. Temperature (F)", y = "Difference (High Res. Temp. - Low Res. Temp.) (F)") +
+  labs(x= "Med Res. Summer Avg. Temperature (F)", y = "Difference (Med Res. Temp. - Low Res. Temp.) (F)") +
   ggtitle("C. Temperature vs. Temperature Difference") +
   theme(plot.title = element_text(hjust = 0, size = 13))
 scatter
