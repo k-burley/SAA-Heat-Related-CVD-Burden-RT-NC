@@ -114,6 +114,8 @@ rm(area_avg, ws_all_dates, ws_clean, ws_all, ws_files)
 
 ## 3. Prep 1km Data at WS Points (code adapted from Format_Heat_Data_CBG) ----
 
+# Files available on Google Drive: https://drive.google.com/drive/folders/1w8cVGYO3_wturLneBdq0W-1fOvc9J2m2?usp=sharing
+
 tmax_2018_ws <- read_csv("G:/My Drive/Global_Daily_Air_Temp_WS/tmax2018_rtp_ws.csv") %>%
   rename(system.index = `system:index`)
 
@@ -149,7 +151,7 @@ ws_1km <- tmax %>%
 
 rm(tmax_2018_ws, tmin_2018_ws, tmax, tmin)
 
-## 3. Combine for Validation ----
+## 4. Combine for Validation ----
 
 stations_all <- ws_final %>%
   left_join(ws_1km, by=c("Station_ID","date")) %>%
@@ -243,7 +245,7 @@ ggplot() +
 
 ggsave("../Data/Figures/Temperature Validation/WS_Diff_Map.png",dpi=300, width=8,height=8)
 
-## 3. Validation figures  ----
+## 5. Validation figures  ----
 
 tempDiff_long <- stations_all %>%
   select(Station_ID, date, tmean_c_1km, tmean_c_ws, diff_mean_c) %>%
@@ -308,8 +310,7 @@ ggplot(stations_all) +
         legend.text = element_text(size=12))
 
 
-
-### PRISM vs. Zhang et al. 2022
+## 6. PRISM vs. Zhang et al. 2022  ----
 
 # Load temperature data from near surface data - change path as needed
 NearSurface <- read.csv("../Data/Original/Temperature/RTP_ZCTA_Temp_2010_2019.csv")
